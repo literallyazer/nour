@@ -3,129 +3,403 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Love Story - Nour 💕</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>2 Months of Love - Nour</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #faf7f2; color: #5a4a6b; overflow-x: hidden; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes glow { 0%, 100% { text-shadow: 0 0 20px rgba(255, 105, 180, 0.5), 0 0 40px rgba(255, 20, 147, 0.3); } 50% { text-shadow: 0 0 50px rgba(255, 105, 180, 1), 0 0 80px rgba(255, 20, 147, 0.6); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-15px) scale(1.02); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        @keyframes moonGlow { 0%, 100% { box-shadow: 0 0 80px rgba(255, 214, 105, 0.7), inset 0 0 40px rgba(255, 250, 230, 0.3); } 50% { box-shadow: 0 0 120px rgba(255, 214, 105, 1), inset 0 0 60px rgba(255, 250, 230, 0.5); } }
+        @keyframes eclipse { 0% { transform: translateX(-15px) translateY(-15px); } 50% { transform: translateX(5px) translateY(5px); } 100% { transform: translateX(-15px) translateY(-15px); } }
+        @keyframes tileFlip { 0% { transform: rotateY(0deg); } 50% { transform: rotateY(90deg); } 100% { transform: rotateY(0deg); } }
+        @keyframes matchPulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); background: radial-gradient(circle, #90EE90, #66CC66); } 100% { transform: scale(1); } }
+        @keyframes counterBounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        
+        .screen { width: 100%; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.9s ease-out; }
+        .screen.hidden { display: none !important; }
+        
+        .game-screen { background: linear-gradient(135deg, #0a0015 0%, #1a0033 50%, #2d0052 100%); position: relative; overflow: hidden; }
+        .game-screen::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 20% 50%, rgba(255, 20, 147, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.1) 0%, transparent 50%); pointer-events: none; }
+        
+        .game-container { max-width: 600px; width: 100%; text-align: center; position: relative; z-index: 1; }
+        .game-title { font-size: 3rem; color: #ff69b4; margin-bottom: 50px; text-shadow: 0 0 20px rgba(255, 105, 180, 0.5); animation: glow 2.5s ease-in-out infinite, float 4s ease-in-out infinite; font-weight: 900; letter-spacing: 2px; }
+        
+        .game-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 40px; padding: 30px; background: rgba(0, 0, 0, 0.4); border: 2px solid rgba(255, 105, 180, 0.3); border-radius: 25px; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(255, 20, 147, 0.2); }
+        
+        .game-tile { aspect-ratio: 1; background: linear-gradient(135deg, #ff1493, #ff69b4); border: 3px solid #ff69b4; border-radius: 15px; cursor: pointer; font-size: 2.5rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 8px 20px rgba(255, 20, 147, 0.4); position: relative; }
+        .game-tile:hover { transform: translateY(-8px) scale(1.08); box-shadow: 0 15px 40px rgba(255, 20, 147, 0.6); }
+        .game-tile:active { transform: translateY(-4px) scale(1.05); }
+        .game-tile.matched { background: linear-gradient(135deg, #66EE66, #90EE90); border-color: #55DD55; animation: matchPulse 0.6s ease-out; box-shadow: 0 0 30px rgba(102, 238, 102, 0.5); }
+        
+        #game-stats { color: #ffb6e1; font-size: 1.3rem; font-weight: bold; margin-bottom: 40px; letter-spacing: 1px; text-transform: uppercase; }
+        
+        .game-win { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(8px); animation: fadeIn 0.5s ease-out; }
+        .game-win.hidden { display: none !important; }
+        .win-content { background: linear-gradient(135deg, #faf7f2, #ffe6f0); border: 4px solid #c97eb7; border-radius: 30px; padding: 80px 50px; text-align: center; animation: float 1s ease-out; box-shadow: 0 20px 60px rgba(201, 126, 183, 0.4); }
+        .win-content h2 { font-size: 3rem; color: #c97eb7; margin-bottom: 20px; animation: glow 2s ease-in-out infinite; }
+        .win-content p { font-size: 1.3rem; color: #5a4a6b; margin-bottom: 30px; }
+        
+        .anniversary-screen { background: linear-gradient(135deg, #faf7f2 0%, #ffe6f0 50%, #e8d5f2 100%); position: relative; overflow: hidden; }
+        .anniversary-screen::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(255, 214, 232, 0.4) 0%, transparent 70%); pointer-events: none; }
+        
+        .anniversary-container { max-width: 900px; width: 100%; text-align: center; position: relative; z-index: 1; }
+        .anniversary-title { font-size: 4.5rem; color: #c97eb7; margin-bottom: 15px; font-weight: 900; animation: float 3.5s ease-in-out infinite; letter-spacing: 1px; }
+        .anniversary-date { font-size: 1.8rem; color: #7d5a8c; font-weight: 700; margin-bottom: 50px; animation: pulse 3s ease-in-out infinite; }
+        
+        .anniversary-message { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; margin-bottom: 80px; }
+        .message-box { background: linear-gradient(135deg, rgba(255, 214, 232, 0.6), rgba(232, 213, 242, 0.6)); border: 3px solid #c97eb7; border-radius: 25px; padding: 50px; text-align: left; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(201, 126, 183, 0.2); }
+        .message-text { font-size: 1.2rem; color: #5a4a6b; line-height: 2; margin-bottom: 20px; font-weight: 500; }
+        .message-text.emphasis { font-size: 1.35rem; font-weight: 800; color: #c97eb7; animation: pulse 2.5s ease-in-out infinite; }
+        
+        .moon { width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle at 32% 32%, #fff9e6, #ffd6a5, #ffb84d); margin: 0 auto; box-shadow: 0 0 80px rgba(255, 214, 105, 0.7), inset 0 0 40px rgba(255, 250, 230, 0.3), inset -20px -20px 60px rgba(255, 180, 0, 0.2); animation: moonGlow 3s ease-in-out infinite, float 4s ease-in-out infinite; position: relative; }
+        .moon::before { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle at 25% 25%, rgba(20, 20, 40, 0.85), rgba(0, 0, 0, 0.4) 40%, transparent 70%); animation: eclipse 5s ease-in-out infinite; }
+        
+        .action-buttons { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 18px 45px; font-size: 1.15rem; background: linear-gradient(135deg, #ffb3d9, #ffd6e8); color: white; border: 3px solid #c97eb7; border-radius: 50px; cursor: pointer; font-weight: 800; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 8px 25px rgba(201, 126, 183, 0.3); text-transform: uppercase; letter-spacing: 1px; }
+        .btn:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 40px rgba(201, 126, 183, 0.5); }
+        .btn:active { transform: translateY(-2px) scale(1.02); }
+        
+        .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(8px); animation: fadeIn 0.4s ease-out; }
+        .modal.hidden { display: none !important; }
+        .modal-content { background: linear-gradient(135deg, #faf7f2, #ffe6f0); border: 4px solid #c97eb7; border-radius: 30px; padding: 60px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(201, 126, 183, 0.4); animation: float 0.5s ease-out; }
+        .modal-content h2 { font-size: 2.5rem; color: #c97eb7; margin-bottom: 40px; text-align: center; font-weight: 900; }
+        .modal-close { position: absolute; top: 20px; right: 20px; width: 55px; height: 55px; background: linear-gradient(135deg, #ffd6e8, #ffb3d9); border: 3px solid #c97eb7; border-radius: 50%; color: #c97eb7; font-size: 2.5rem; cursor: pointer; transition: all 0.3s ease; font-weight: bold; }
+        .modal-close:hover { transform: rotate(90deg) scale(1.1); box-shadow: 0 0 20px rgba(201, 126, 183, 0.5); }
+        
+        canvas { display: block; max-width: 100%; }
+        .bouquet-message { text-align: center; font-size: 1.3rem; color: #c97eb7; margin-top: 30px; font-style: italic; font-weight: 600; }
+        
+        .love-counter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin: 50px 0; }
+        .counter-item { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .counter-number { font-size: 3.5rem; font-weight: 900; color: #c97eb7; animation: counterBounce 1.2s ease-in-out infinite; letter-spacing: 2px; }
+        .counter-label { font-size: 1.1rem; color: #5a4a6b; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        
+        #fireworks-canvas { display: block; width: 100%; height: 100vh; }
+        .fireworks-screen { background: #000; padding: 0; position: relative; }
+        .fireworks-close { position: fixed; top: 30px; left: 30px; padding: 15px 30px; background: linear-gradient(135deg, rgba(255, 105, 180, 0.9), rgba(255, 182, 193, 0.9)); color: white; border: 2px solid white; border-radius: 30px; cursor: pointer; font-weight: bold; font-size: 1.1rem; z-index: 100; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 8px 25px rgba(255, 20, 147, 0.5); }
+        .fireworks-close:hover { transform: translateY(-3px) scale(1.08); box-shadow: 0 15px 40px rgba(255, 20, 147, 0.7); }
+        
+        @media (max-width: 768px) {
+            .anniversary-message { grid-template-columns: 1fr; gap: 40px; }
+            .action-buttons { flex-direction: column; }
+            .btn { width: 100%; }
+            .love-counter { grid-template-columns: 1fr; }
+            .game-board { grid-template-columns: repeat(3, 1fr); }
+            .anniversary-title { font-size: 3rem; }
+            .game-title { font-size: 2rem; }
+        }
+    </style>
 </head>
 <body>
-    <!-- INTRO SCREEN -->
-    <div id="intro-screen" class="screen intro-screen">
-        <div class="intro-content">
-            <h1 class="intro-title">Hi Nour 👋</h1>
-            <p class="intro-subtitle">I made something special for you...</p>
-            <p class="intro-description">101 days of love, memories, and forever with you</p>
-            <button class="btn-primary" onclick="startGame()">
-                Begin the Journey
-                <span class="btn-glow"></span>
-            </button>
-        </div>
-    </div>
-
-    <!-- GAME LEVEL -->
-    <div id="game-screen" class="screen game-screen hidden">
+    <div id="game-screen" class="screen game-screen">
         <div class="game-container">
-            <div class="game-header">
-                <h2>Match Our Memories 💕</h2>
-                <div class="game-stats">
-                    <span>Matches: <strong id="match-count">0</strong>/3</span>
-                    <span>Score: <strong id="score">0</strong></span>
+            <h1 class="game-title">Follow the Sequence! 🎮</h1>
+            <div id="game-stats" style="font-size: 1.4rem; margin: 40px 0; color: #ffb6e1;">Level: <span id="score">0</span> | Status: <span id="lives">🔥</span></div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 400px; margin: 40px auto;">
+                <button id="btn-red" class="game-tile" onclick="buttonClick('btn-red')" style="background: #ff3333; box-shadow: 0 0 30px rgba(255, 51, 51, 0.5);"></button>
+                <button id="btn-blue" class="game-tile" onclick="buttonClick('btn-blue')" style="background: #3366ff; box-shadow: 0 0 30px rgba(51, 102, 255, 0.5);"></button>
+                <button id="btn-yellow" class="game-tile" onclick="buttonClick('btn-yellow')" style="background: #ffcc00; box-shadow: 0 0 30px rgba(255, 204, 0, 0.5);"></button>
+                <button id="btn-green" class="game-tile" onclick="buttonClick('btn-green')" style="background: #33ff33; box-shadow: 0 0 30px rgba(51, 255, 51, 0.5);"></button>
+            </div>
+            <div id="game-instructions" style="color: #ffb6e1; margin-top: 40px; font-size: 1.1rem;">Watch the sequence • Then repeat it!</div>
+            <div id="game-win" class="game-win hidden">
+                <div class="win-content">
+                    <h2>You Won! 🎉</h2>
+                    <p>You completed all 5 levels!</p>
+                    <button class="btn" onclick="unlockAnniversary()">Enter Anniversary</button>
                 </div>
             </div>
+        </div>
+    </div>
+    <div id="anniversary-screen" class="screen anniversary-screen hidden">
+        <div class="anniversary-container">
+            <h1 class="anniversary-title">Hello Nour</h1>
+            <p class="anniversary-date">2 Months</p>
+            <div class="anniversary-message">
+                <div class="message-box">
+                    <p class="message-text">Two months ago, in the magical Sacré Coeur cafe, under the watchful eye of an eclipsed moon, you made us official.</p>
+                    <p class="message-text">That moment changed my life forever.</p>
+                    <p class="message-text" style="font-size: 1.3rem; font-weight: 700; color: #c97eb7;">Every single day since then has been a gift. I love you more than words can say. 💕</p>
+                </div>
+                <div style="display: flex; justify-content: center;"><div class="moon"></div></div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn" onclick="showBouquet()">Bouquet</button>
+                <button class="btn" onclick="showFireworks()">Fireworks</button>
+                <button class="btn" onclick="showSurprise()">Surprise</button>
+            </div>
+        </div>
+    </div>
+    <div id="bouquet-modal" class="modal hidden" onclick="if(event.target.id === 'bouquet-modal') closeBouquet()">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeBouquet()">✕</button>
+            <h2>Your Bouquet</h2>
+            <canvas id="bouquet-canvas" width="500" height="500"></canvas>
+        </div>
+    </div>
+    <div id="fireworks-screen" class="screen fireworks-screen hidden">
+        <canvas id="fireworks-canvas"></canvas>
+        <button class="btn" style="position: fixed; top: 20px; left: 20px; background: rgba(255,255,255,0.2); border: 2px solid white; color: white;" onclick="closeFireworks()">← Back</button>
+    </div>
+    <div id="surprise-modal" class="modal hidden" onclick="if(event.target.id === 'surprise-modal') closeSurprise()">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSurprise()">✕</button>
+            <h2>Together</h2>
+            <div class="love-counter">
+                <div><div class="counter-number" id="counter-days">61</div><div class="counter-label">Days</div></div>
+                <div><div class="counter-number" id="counter-hours">14</div><div class="counter-label">Hours</div></div>
+                <div><div class="counter-number" id="counter-minutes">30</div><div class="counter-label">Minutes</div></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Match The Sequence Game - Simple & Fun!
+        const gameState = { 
+            sequence: [],
+            playerSequence: [],
+            level: 1,
+            gameOver: false,
+            won: false,
+            playing: false
+        };
+        
+        function initGame() {
+            gameState.sequence = [];
+            gameState.playerSequence = [];
+            gameState.level = 1;
+            gameState.gameOver = false;
+            gameState.won = false;
+            gameState.playing = true;
+            document.getElementById('score').textContent = gameState.level;
+            document.getElementById('lives').textContent = '🔥';
+            addToSequence();
+        }
+        
+        function addToSequence() {
+            const buttons = ['btn-red', 'btn-blue', 'btn-yellow', 'btn-green'];
+            const randomBtn = buttons[Math.floor(Math.random() * buttons.length)];
+            gameState.sequence.push(randomBtn);
+            gameState.playerSequence = [];
+            playSequence();
+        }
+        
+        async function playSequence() {
+            gameState.playing = true;
+            await new Promise(resolve => setTimeout(resolve, 500));
             
-            <div class="game-board" id="game-board">
-                <!-- Cards will be generated by JavaScript -->
-            </div>
-
-            <div id="level-complete" class="level-complete hidden">
-                <div class="complete-content">
-                    <h3>🎉 Amazing!</h3>
-                    <p>You unlocked our memories!</p>
-                    <button class="btn-primary" onclick="goToTimeline()">
-                        See Our Journey
-                        <span class="btn-glow"></span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TIMELINE LEVEL -->
-    <div id="timeline-screen" class="screen timeline-screen hidden">
-        <div class="timeline-container">
-            <div class="timeline-header">
-                <h2>Our Beautiful Journey ✨</h2>
-                <p>Click cards to reveal our story</p>
-            </div>
-
-            <div class="timeline-cards" id="timeline-cards">
-                <!-- Timeline cards will be generated by JavaScript -->
-            </div>
-
-            <button class="btn-primary timeline-btn" onclick="goToFinale()">
-                The Grand Finale 🌹
-                <span class="btn-glow"></span>
-            </button>
-        </div>
-    </div>
-
-    <!-- FINALE SCREEN -->
-    <div id="finale-screen" class="screen finale-screen hidden">
-        <div class="finale-container">
-            <div class="finale-content">
-                <h1 class="finale-title">Nour...</h1>
-                <div class="finale-message">
-                    <p>These 101 days have been the most beautiful days of my life.</p>
-                    <p>Every moment with you is a treasure.</p>
-                    <p>Every laugh, every hug, every word you say.</p>
-                    <br>
-                    <p><strong>I love you more than words can express.</strong></p>
-                    <p><strong>Forever, always, you are my everything. 💕</strong></p>
-                </div>
+            for (let i = 0; i < gameState.sequence.length; i++) {
+                await new Promise(resolve => setTimeout(resolve, 400));
+                flashButton(gameState.sequence[i]);
+            }
+            
+            gameState.playing = false;
+        }
+        
+        function flashButton(btnId) {
+            const btn = document.getElementById(btnId);
+            btn.style.opacity = '0.3';
+            playSound(btnId);
+            setTimeout(() => {
+                btn.style.opacity = '1';
+            }, 200);
+        }
+        
+        function buttonClick(btnId) {
+            if (gameState.playing || gameState.gameOver || gameState.won) return;
+            
+            flashButton(btnId);
+            gameState.playerSequence.push(btnId);
+            
+            // Check if correct
+            const lastIdx = gameState.playerSequence.length - 1;
+            if (gameState.playerSequence[lastIdx] !== gameState.sequence[lastIdx]) {
+                gameState.gameOver = true;
+                document.getElementById('game-win').classList.remove('hidden');
+                document.querySelector('.win-content h2').textContent = 'Game Over! 💔';
+                document.querySelector('.win-content p').textContent = `You made it to Level ${gameState.level}! Close enough. 😘`;
+                return;
+            }
+            
+            // Check if sequence complete
+            if (gameState.playerSequence.length === gameState.sequence.length) {
+                gameState.level++;
+                if (gameState.level > 5) {
+                    gameState.won = true;
+                    document.getElementById('game-win').classList.remove('hidden');
+                    return;
+                }
+                document.getElementById('score').textContent = gameState.level;
+                setTimeout(addToSequence, 800);
+            }
+        }
+        
+        function playSound(btnId) {
+            const sounds = { 'btn-red': 300, 'btn-blue': 400, 'btn-yellow': 500, 'btn-green': 600 };
+            const freq = sounds[btnId] || 400;
+            // Optional: Add simple beep using Web Audio API
+        }
+        function unlockAnniversary() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('anniversary-screen').classList.remove('hidden');
+        }
+        function showBouquet() {
+            document.getElementById('bouquet-modal').classList.remove('hidden');
+            setTimeout(drawBouquet, 100);
+        }
+        function closeBouquet() {
+            document.getElementById('bouquet-modal').classList.add('hidden');
+        }
+        function drawBouquet() {
+            const canvas = document.getElementById('bouquet-canvas');
+            const ctx = canvas.getContext('2d');
+            const flowers = [
+                { x: 250, y: 150, color: '#ff1493', size: 35, petals: 5 },
+                { x: 150, y: 220, color: '#ff69b4', size: 28, petals: 5 },
+                { x: 350, y: 220, color: '#ffb6c1', size: 28, petals: 5 },
+                { x: 130, y: 340, color: '#ffd700', size: 25, petals: 6 },
+                { x: 370, y: 340, color: '#ff1493', size: 25, petals: 6 },
+                { x: 200, y: 380, color: '#ff69b4', size: 22, petals: 5 },
+                { x: 300, y: 380, color: '#ffb6c1', size: 22, petals: 5 },
+                { x: 250, y: 420, color: '#ffd700', size: 20, petals: 6 },
+                { x: 250, y: 250, color: '#00ff00', size: 18, petals: 4 }
+            ];
+            
+            const now = Date.now();
+            const elapsed = (now % 3000) / 3000;
+            
+            flowers.forEach((flower, idx) => {
+                const delay = idx * 0.1;
+                const progress = (elapsed + delay) % 1;
+                const scale = Math.min(1, progress * 2);
+                const opacity = progress < 0.9 ? 1 : 1 - (progress - 0.9) * 10;
                 
-                <div class="bouquet-intro">
-                    <p>Here's a digital bouquet since I can't give you one right now 🌹</p>
-                </div>
-
-                <div class="bouquet-container">
-                    <canvas id="bouquet-canvas" class="bouquet-canvas"></canvas>
-                </div>
-
-                <div class="finale-action">
-                    <button class="btn-primary" onclick="showGift()">
-                        Open Your Gift 🎁
-                        <span class="btn-glow"></span>
-                    </button>
-                </div>
-            </div>
-
-            <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
-        </div>
-    </div>
-
-    <!-- GIFT MODAL -->
-    <div id="gift-modal" class="modal hidden" onclick="closeGift(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeGift()">✕</button>
+                ctx.globalAlpha = opacity;
+                drawFlower(ctx, flower.x, flower.y, flower.color, flower.size * scale, flower.petals);
+            });
             
-            <div class="gift-flowers">
-                <div class="flower f1">🌹</div>
-                <div class="flower f2">🌹</div>
-                <div class="flower f3">🌹</div>
-            </div>
-
-            <div class="gift-message">
-                <h2>My Dearest Nour,</h2>
-                <div class="message-lines">
-                    <div class="msg-line">💕 You are my greatest blessing.</div>
-                    <div class="msg-line">✨ You make every day feel like a dream.</div>
-                    <div class="msg-line">🌟 With you, I found my soulmate.</div>
-                    <div class="msg-line">💖 I promise to love you endlessly.</div>
-                    <div class="msg-line">🎁 You deserve all the beauty in this world.</div>
-                    <div class="msg-line signature">Forever yours,<br><strong>Azer 💕</strong></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+            ctx.globalAlpha = 1;
+            drawStem(ctx, 250, 420, 250, 480);
+            
+            requestAnimationFrame(drawBouquet);
+        }
+        
+        function drawFlower(ctx, cx, cy, color, size, petals) {
+            for (let i = 0; i < petals; i++) {
+                const angle = (i / petals) * Math.PI * 2;
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(angle);
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.ellipse(0, -size * 0.6, size * 0.35, size * 0.8, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+            ctx.fillStyle = '#ffd700';
+            ctx.beginPath();
+            ctx.arc(cx, cy, size * 0.25, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function drawStem(ctx, x1, y1, x2, y2) {
+            ctx.strokeStyle = '#228B22';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.bezierCurveTo(x1 - 20, (y1 + y2) / 2, x2 + 20, (y1 + y2) / 2, x2, y2);
+            ctx.stroke();
+        }
+        function showFireworks() {
+            document.getElementById('anniversary-screen').classList.add('hidden');
+            document.getElementById('fireworks-screen').classList.remove('hidden');
+            startFireworks();
+        }
+        function closeFireworks() {
+            document.getElementById('fireworks-screen').classList.add('hidden');
+            document.getElementById('anniversary-screen').classList.remove('hidden');
+        }
+        function startFireworks() {
+            const canvas = document.getElementById('fireworks-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            let particles = [];
+            const colors = ['#ff1493', '#ff69b4', '#ffb6c1', '#ffd700', '#00ff00', '#00bfff', '#ff00ff', '#00ffff', '#ffff00'];
+            
+            function createExplosion(x, y, particleCount) {
+                for (let i = 0; i < particleCount; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = Math.random() * 10 + 5;
+                    const size = Math.random() * 4 + 2;
+                    particles.push({
+                        x, y,
+                        vx: Math.cos(angle) * velocity,
+                        vy: Math.sin(angle) * velocity,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        age: 0,
+                        life: 1200 + Math.random() * 800,
+                        size: size,
+                        trail: []
+                    });
+                }
+            }
+            
+            let frameCount = 0;
+            const duration = 120;
+            
+            function animate() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                particles = particles.filter(p => p.age < p.life);
+                
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.3;
+                    p.vx *= 0.99;
+                    p.age += 16;
+                    
+                    const life = 1 - (p.age / p.life);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = life * 0.8;
+                    ctx.shadowBlur = 20;
+                    ctx.shadowColor = p.color;
+                    
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                
+                ctx.globalAlpha = 1;
+                ctx.shadowBlur = 0;
+                
+                frameCount++;
+                if (frameCount % 8 === 0) {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height * 0.6;
+                    createExplosion(x, y, 40 + Math.random() * 40);
+                }
+                
+                if (frameCount < duration || particles.length > 0) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+        function showSurprise() {
+            document.getElementById('surprise-modal').classList.remove('hidden');
+        }
+        function closeSurprise() {
+            document.getElementById('surprise-modal').classList.add('hidden');
+        }
+        initGame();
+    </script>
 </body>
 </html>
